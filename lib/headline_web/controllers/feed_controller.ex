@@ -8,7 +8,8 @@ defmodule HeadlineWeb.FeedController do
 
   def index(conn, _params) do
     feeds = RSS.list_feeds()
-    render(conn, "index.json", feeds: feeds)
+    feeds_by_group = RSS.list_feeds_by_group()
+    render(conn, "index.json", feeds: feeds, feeds_by_group: feeds_by_group)
   end
 
   def create(conn, %{"feed" => feed_params}) do

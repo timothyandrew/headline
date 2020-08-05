@@ -2,13 +2,10 @@ defmodule HeadlineWeb.GroupView do
   use HeadlineWeb, :view
   alias HeadlineWeb.GroupView
 
-  def render("index.json", %{groups: groups}) do
-    %{data: render_many(groups, GroupView, "group.json")}
-  end
-
-  def render("show.json", %{group: group}) do
+  def render("index.json", %{groups: groups, feeds_by_group: feeds_by_group}) do
     %{
-      groups: render_one(group, GroupView, "group.json")
+      groups: render_many(groups, GroupView, "group.json"),
+      feeds_groups: feeds_by_group
     }
   end
 

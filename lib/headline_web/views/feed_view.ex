@@ -2,12 +2,11 @@ defmodule HeadlineWeb.FeedView do
   use HeadlineWeb, :view
   alias HeadlineWeb.FeedView
 
-  def render("index.json", %{feeds: feeds}) do
-    %{data: render_many(feeds, FeedView, "feed.json")}
-  end
-
-  def render("show.json", %{feed: feed}) do
-    %{data: render_one(feed, FeedView, "feed.json")}
+  def render("index.json", %{feeds: feeds, feeds_by_group: feeds_by_group}) do
+    %{
+      feeds: render_many(feeds, FeedView, "feed.json"),
+      feeds_groups: feeds_by_group
+    }
   end
 
   def render("feed.json", %{feed: feed}) do

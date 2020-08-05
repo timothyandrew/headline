@@ -6,7 +6,7 @@ defmodule Headline.RSS do
   import Ecto.Query, warn: false
   alias Headline.Repo
 
-  alias Headline.RSS.Feed
+  alias Headline.RSS.{Feed, Group}
 
   @doc """
   Returns the list of feeds.
@@ -17,8 +17,21 @@ defmodule Headline.RSS do
       [%Feed{}, ...]
 
   """
-  def list_feeds do
+  def list_feeds() do
     Repo.all(Feed)
+  end
+
+  def list_feeds_by_group() do
+    query =
+      from g in Group,
+        join: f in assoc(g, :feeds),
+        group_by: g.id,
+        select: %{
+          group_id: g.id,
+          feed_ids: fragment("ARRAY_AGG(?)", f.id)
+        }
+
+    Repo.all(query)
   end
 
   @doc """
