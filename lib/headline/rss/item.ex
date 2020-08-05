@@ -9,7 +9,7 @@ defmodule Headline.RSS.Item do
     field :is_saved, :boolean, default: false
     field :title, :string
     field :url, :string
-    field :feed, :id
+    belongs_to :feed, Feed
 
     timestamps()
   end
@@ -17,7 +17,7 @@ defmodule Headline.RSS.Item do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:title, :author, :html, :url, :is_saved, :is_read])
-    |> validate_required([:title, :author, :html, :url, :is_saved, :is_read])
+    |> cast(attrs, [:title, :author, :html, :url, :is_saved, :is_read, :feed_id])
+    |> validate_required([:title, :author, :html, :url, :is_saved, :is_read, :feed_id])
   end
 end

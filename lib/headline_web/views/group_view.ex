@@ -7,11 +7,15 @@ defmodule HeadlineWeb.GroupView do
   end
 
   def render("show.json", %{group: group}) do
-    %{data: render_one(group, GroupView, "group.json")}
+    %{
+      groups: render_one(group, GroupView, "group.json")
+    }
   end
 
   def render("group.json", %{group: group}) do
-    %{id: group.id,
-      title: group.title}
+    %{
+      id: group.id,
+      title: group.title
+    }
   end
 end

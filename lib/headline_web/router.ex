@@ -13,16 +13,16 @@ defmodule HeadlineWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", HeadlineWeb do
-    pipe_through :browser
+  # scope "/", HeadlineWeb do
+  #   pipe_through :browser
 
-    get "/", PageController, :index
-  end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", HeadlineWeb do
-  #   pipe_through :api
+  #   get "/", PageController, :index
   # end
+
+  scope "/fever", HeadlineWeb do
+    pipe_through :api
+    get "/", Plugs.FeverApiRouter, {}
+  end
 
   # Enables LiveDashboard only for development
   #
