@@ -19,6 +19,6 @@ defmodule Headline.RSS.Item do
   def changeset(item, attrs) do
     item
     |> cast(attrs, [:title, :author, :html, :url, :is_saved, :is_read, :feed_id])
-    |> validate_required([:title, :author, :html, :url, :is_saved, :is_read, :feed_id])
+    |> validate_required([:title, :url, :is_saved, :is_read, :feed_id])
   end
 end
