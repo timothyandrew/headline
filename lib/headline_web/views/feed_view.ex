@@ -1,20 +1,30 @@
 defmodule HeadlineWeb.FeedView do
   use HeadlineWeb, :view
-  alias HeadlineWeb.FeedView
+  use Timex
+  alias HeadlineWeb.{BaseView, FeedView, Util}
 
   def render("index.json", %{feeds: feeds, feeds_by_group: feeds_by_group}) do
-    %{
-      feeds: render_many(feeds, FeedView, "feed.json"),
-      feeds_groups: feeds_by_group
-    }
+    Map.merge(
+      render(BaseView, "base.json", %{}),
+      %{
+        feeds: render_many(feeds, FeedView, "feed.json"),
+        feeds_groups: render_many(feeds_by_group, FeedView, "feeds_by_group.json")
+      }
+    )
+  end
+
+  def render("feeds_by_group.json", %{feed: %{feed_ids: feed_ids, group_id: group_id}}) do
+    %{group_id: group_id,
+      feed_ids: Enum.join(feed_ids, ",")}
   end
 
   def render("feed.json", %{feed: feed}) do
     %{id: feed.id,
       title: feed.title,
+      favicon_id: 1,
       url: feed.url,
       site_url: feed.site_url,
-      is_spark: feed.is_spark,
-      last_updated_on_time: feed.last_updated_on_time}
+      is_spark: Util.bool_to_int(feed.is_spark),
+      last_updated_on_time: Timex.to_unix(feed.last_updated_on_time)}
   end
 end

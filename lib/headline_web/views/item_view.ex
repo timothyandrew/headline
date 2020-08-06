@@ -1,9 +1,14 @@
 defmodule HeadlineWeb.ItemView do
   use HeadlineWeb, :view
-  alias HeadlineWeb.ItemView
+  alias HeadlineWeb.{Util, ItemView, BaseView}
 
   def render("index.json", %{items: items}) do
-    %{data: render_many(items, ItemView, "item.json")}
+    Map.merge(
+      render(BaseView, "base.json", %{}),
+      %{items: render_many(items, ItemView, "item.json"),
+        # TODO: This will be inaccurate once the controller implements filtering
+        total_items: Enum.count(items)}
+    )
   end
 
   def render("show.json", %{item: item}) do
@@ -16,7 +21,9 @@ defmodule HeadlineWeb.ItemView do
       author: item.author,
       html: item.html,
       url: item.url,
-      is_saved: item.is_saved,
-      is_read: item.is_read}
+      feed_id: item.feed_id,
+      created_on_time: Timex.to_unix(item.inserted_at),
+      is_saved: Util.bool_to_int(item.is_saved),
+      is_read: Util.bool_to_int(item.is_read)}
   end
 end

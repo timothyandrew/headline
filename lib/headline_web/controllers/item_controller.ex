@@ -7,6 +7,7 @@ defmodule HeadlineWeb.ItemController do
   action_fallback HeadlineWeb.FallbackController
 
   def index(conn, _params) do
+    # TODO: Filtering via the `since_id`, `max_id`, and `with_ids` parameters
     items = RSS.list_items()
     render(conn, "index.json", items: items)
   end

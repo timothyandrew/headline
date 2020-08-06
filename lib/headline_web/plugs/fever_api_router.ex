@@ -1,5 +1,5 @@
 defmodule HeadlineWeb.Plugs.FeverApiRouter do
-  alias HeadlineWeb.{GroupController,FeedController}
+  alias HeadlineWeb.{GroupController,FeedController, ItemController}
 
   use Plug.Builder
 
@@ -22,21 +22,21 @@ defmodule HeadlineWeb.Plugs.FeverApiRouter do
     end
   end
 
-  def groups(conn, opts) do
+  def groups(conn, _opts) do
     case Map.has_key?(conn.query_params, "groups") do
       true -> conn |> GroupController.call(:index) |> halt()
       false -> conn
     end
   end
 
-  def feeds(conn, opts) do
+  def feeds(conn, _opts) do
     case Map.has_key?(conn.query_params, "feeds") do
       true -> conn |> FeedController.call(:index) |> halt()
       false -> conn
     end
   end
 
-  def items(conn, opts) do
+  def items(conn, _opts) do
     case Map.has_key?(conn.query_params, "items") do
       true -> conn |> ItemController.call(:index) |> halt()
       false -> conn
@@ -44,8 +44,11 @@ defmodule HeadlineWeb.Plugs.FeverApiRouter do
   end
 
   def fallthrough(conn, _opts) do
+    resp = Jason.encode!(HeadlineWeb.BaseView.render("base.json", %{}), %{})
+
     conn
-    |> send_resp(:not_found, "The query parameters you passed don't correspond to a Fever API endpoint, sorry!")
+    |> put_resp_content_type("application/json")
+    |> send_resp(:ok, resp)
     |> halt()
   end
 end

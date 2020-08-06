@@ -22,6 +22,7 @@ defmodule HeadlineWeb.Router do
   scope "/fever", HeadlineWeb do
     pipe_through :api
     get "/", Plugs.FeverApiRouter, {}
+    post "/", Plugs.FeverApiRouter, {}
   end
 
   # Enables LiveDashboard only for development
