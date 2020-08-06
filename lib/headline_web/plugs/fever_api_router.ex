@@ -7,6 +7,8 @@ defmodule HeadlineWeb.Plugs.FeverApiRouter do
   plug :groups
   plug :feeds
   plug :items
+  plug :unread_items
+  plug :saved_items
   plug :fallthrough
 
   def common(conn, opts) do
@@ -39,6 +41,20 @@ defmodule HeadlineWeb.Plugs.FeverApiRouter do
   def items(conn, _opts) do
     case Map.has_key?(conn.query_params, "items") do
       true -> conn |> ItemController.call(:index) |> halt()
+      false -> conn
+    end
+  end
+
+  def unread_items(conn, _opts) do
+    case Map.has_key?(conn.query_params, "unread_item_ids") do
+      true -> conn |> ItemController.call(:unread) |> halt()
+      false -> conn
+    end
+  end
+
+  def saved_items(conn, _opts) do
+    case Map.has_key?(conn.query_params, "saved_item_ids") do
+      true -> conn |> ItemController.call(:saved) |> halt()
       false -> conn
     end
   end

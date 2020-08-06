@@ -11,8 +11,18 @@ defmodule HeadlineWeb.ItemView do
     )
   end
 
-  def render("show.json", %{item: item}) do
-    %{data: render_one(item, ItemView, "item.json")}
+  def render("unread.json", %{items: items}) do
+    Map.merge(
+      render(BaseView, "base.json", %{}),
+      %{unread_item_ids: Enum.join(Enum.map(items, fn i -> i.id end), ",")}
+    )
+  end
+
+  def render("saved.json", %{items: items}) do
+    Map.merge(
+      render(BaseView, "base.json", %{}),
+      %{saved_item_ids: Enum.join(Enum.map(items, fn i -> i.id end), ",")}
+    )
   end
 
   def render("item.json", %{item: item}) do

@@ -8,6 +8,8 @@ Fever-compatible RSS server
 - [x] Basic JSON responses
 - [x] Groups/feeds/items show up in Reeder
 - [ ] Favicons
+- [ ] Unread/saved status
+- [ ] Implement the write path
 - [ ] Correct timestamps across the board
 - [ ] Load existing data in (this includes some HTML parsing)
 - [ ] Admin UI

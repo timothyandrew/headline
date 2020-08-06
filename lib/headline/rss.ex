@@ -213,18 +213,9 @@ defmodule Headline.RSS do
 
   alias Headline.RSS.Item
 
-  @doc """
-  Returns the list of items.
-
-  ## Examples
-
-      iex> list_items()
-      [%Item{}, ...]
-
-  """
-  def list_items do
-    Repo.all(Item)
-  end
+  def list_items(), do: Repo.all(Item)
+  def list_unread_items(), do: Repo.all(from i in Item, where: i.is_read == false)
+  def list_saved_items(), do: Repo.all(from i in Item, where: i.is_saved == true)
 
   @doc """
   Gets a single item.
