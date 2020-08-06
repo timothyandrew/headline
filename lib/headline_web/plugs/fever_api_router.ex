@@ -9,12 +9,13 @@ defmodule HeadlineWeb.Plugs.FeverApiRouter do
   plug :items
   plug :unread_items
   plug :saved_items
+  plug :mark
   plug :fallthrough
 
   def common(conn, opts) do
     fetch_query_params(conn)
 
-    case Map.fetch(conn.query_params, "api") do
+    case Map.fetch(conn.params, "api") do
       {:ok, "xml"} ->
         conn
         |> send_resp(:not_implemented, "XML isn't implemented yet.")
@@ -25,39 +26,50 @@ defmodule HeadlineWeb.Plugs.FeverApiRouter do
   end
 
   def groups(conn, _opts) do
-    case Map.has_key?(conn.query_params, "groups") do
+    case Map.has_key?(conn.params, "groups") do
       true -> conn |> GroupController.call(:index) |> halt()
       false -> conn
     end
   end
 
   def feeds(conn, _opts) do
-    case Map.has_key?(conn.query_params, "feeds") do
+    case Map.has_key?(conn.params, "feeds") do
       true -> conn |> FeedController.call(:index) |> halt()
       false -> conn
     end
   end
 
   def items(conn, _opts) do
-    case Map.has_key?(conn.query_params, "items") do
+    case Map.has_key?(conn.params, "items") do
       true -> conn |> ItemController.call(:index) |> halt()
       false -> conn
     end
   end
 
   def unread_items(conn, _opts) do
-    case Map.has_key?(conn.query_params, "unread_item_ids") do
+    case Map.has_key?(conn.params, "unread_item_ids") do
       true -> conn |> ItemController.call(:unread) |> halt()
       false -> conn
     end
   end
 
   def saved_items(conn, _opts) do
-    case Map.has_key?(conn.query_params, "saved_item_ids") do
+    case Map.has_key?(conn.params, "saved_item_ids") do
       true -> conn |> ItemController.call(:saved) |> halt()
       false -> conn
     end
   end
+
+  def mark(conn, _opts) do
+    case Map.fetch(conn.params, "mark") do
+      {:ok, "item"} -> conn |> ItemController.call(:update) |> halt()
+      {:ok, "feed"} -> conn |> FeedController.call(:update) |> halt()
+      {:ok, "group"} -> conn |> GroupController.call(:update) |> halt()
+      {:ok, _} -> conn
+      :error -> conn
+    end
+  end
+
 
   def fallthrough(conn, _opts) do
     resp = Jason.encode!(HeadlineWeb.BaseView.render("base.json", %{}), %{})

@@ -7,7 +7,7 @@ Fever-compatible RSS server
 - [x] Set up Phoenix
 - [x] Basic JSON responses
 - [x] Groups/feeds/items show up in Reeder
-- [ ] Favicons
+- [x] Favicons
 - [ ] Unread/saved status
 - [ ] Implement the write path
 - [ ] Correct timestamps across the board

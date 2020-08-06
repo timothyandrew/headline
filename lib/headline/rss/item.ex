@@ -1,6 +1,7 @@
 defmodule Headline.RSS.Item do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Headline.RSS.Feed
 
   schema "items" do
     field :author, :string
