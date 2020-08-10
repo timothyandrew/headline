@@ -19,6 +19,11 @@ defmodule HeadlineWeb.Router do
   #   get "/", PageController, :index
   # end
 
+  scope "/api", HeadlineWeb do
+    pipe_through :api
+    get "/hugo.json", FeedController, :hugo_json
+  end
+
   scope "/fever", HeadlineWeb do
     pipe_through :api
     get "/", Plugs.FeverApiRouter, {}

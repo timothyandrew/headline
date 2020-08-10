@@ -12,6 +12,14 @@ defmodule Headline.RSS do
   def get_feed!(id), do: Repo.get!(Feed, id)
   def list_feeds(), do: Repo.all(Feed)
 
+  def list_feeds_preloading_unread_items() do
+    Repo.all(from f in Feed,
+      left_join: i in assoc(f, :items),
+      where: i.is_read == false,
+      order_by: [desc: i.inserted_at],
+      preload: [items: i])
+  end
+
   def list_feeds_by_group() do
     query =
       from g in Group,

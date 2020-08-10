@@ -22,4 +22,9 @@ defmodule HeadlineWeb.FeedController do
       |> render("unread.json", items: RSS.list_unread_items())
     end
   end
+
+  def hugo_json(conn, _params) do
+    feeds = RSS.list_feeds_preloading_unread_items()
+    render(conn, "hugo.json", feeds: feeds)
+  end
 end
