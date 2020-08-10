@@ -10,7 +10,9 @@ defmodule Headline.RSS do
   alias Headline.RSS.{Feed, Group, Item}
 
   def get_feed!(id), do: Repo.get!(Feed, id)
-  def list_feeds(), do: Repo.all(Feed)
+
+  def list_feeds(), do: Repo.all(from f in Feed, where: not(is_nil(f.last_updated_on_time)))
+  def list_fetchable_feeds, do: Repo.all(from f in Feed, where: not(is_nil(f.url)))
 
   def list_feeds_preloading_unread_items() do
     Repo.all(from f in Feed,
@@ -133,6 +135,12 @@ defmodule Headline.RSS do
   def update_item(%Item{} = item, attrs) do
     item
     |> Item.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def update_feed(%Feed{} = feed, attrs) do
+    feed
+    |> Feed.changeset(attrs)
     |> Repo.update()
   end
 

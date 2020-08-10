@@ -17,7 +17,7 @@ defmodule Headline.Application do
       HeadlineWeb.Endpoint,
       # Start a worker by calling: Headline.Worker.start_link(arg)
       # {Headline.Worker, arg}
-      Headline.Fetcher
+      {Headline.Fetcher, %{delay: 3600000}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

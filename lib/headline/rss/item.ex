@@ -20,5 +20,6 @@ defmodule Headline.RSS.Item do
     item
     |> cast(attrs, [:title, :author, :html, :url, :is_saved, :is_read, :feed_id])
     |> validate_required([:title, :url, :is_saved, :is_read, :feed_id])
+    |> unique_constraint([:feed_id, :url])
   end
 end
