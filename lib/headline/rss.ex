@@ -14,10 +14,10 @@ defmodule Headline.RSS do
   def list_feeds(), do: Repo.all(from f in Feed, where: not(is_nil(f.last_updated_on_time)))
   def list_fetchable_feeds, do: Repo.all(from f in Feed, where: not(is_nil(f.url)))
 
-  def list_feeds_preloading_unread_items() do
+  def list_feeds_hugo() do
     Repo.all(from f in Feed,
       left_join: i in assoc(f, :items),
-      where: i.is_read == false,
+      where: i.is_read == false and is_nil(f.url),
       order_by: [desc: i.inserted_at],
       preload: [items: i])
   end
