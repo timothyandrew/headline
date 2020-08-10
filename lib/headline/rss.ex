@@ -112,6 +112,23 @@ defmodule Headline.RSS do
   end
   def list_items(%{}), do: Repo.all(Item)
 
+  def get_random_item_nohtml do
+    query = from i in Item,
+      where: is_nil(i.html),
+      order_by: fragment("RANDOM()"),
+      limit: 1,
+      select: i
+
+    Repo.one(query)
+  end
+
+  def update_item(%Item{} = item, attrs) do
+    item
+    |> Item.changeset(attrs)
+    |> Repo.update()
+  end
+
+
   def list_unread_items(), do: Repo.all(from i in Item, where: i.is_read == false)
   def list_saved_items(), do: Repo.all(from i in Item, where: i.is_saved == true)
 

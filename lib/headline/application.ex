@@ -14,9 +14,10 @@ defmodule Headline.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Headline.PubSub},
       # Start the Endpoint (http/https)
-      HeadlineWeb.Endpoint
+      HeadlineWeb.Endpoint,
       # Start a worker by calling: Headline.Worker.start_link(arg)
       # {Headline.Worker, arg}
+      Headline.Fetcher
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
