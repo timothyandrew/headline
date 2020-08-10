@@ -12,8 +12,12 @@ defmodule Headline.Fetcher do
   def run(%{delay: delay} = opts) do
     Logger.info("Starting an RSS fetch run at #{Timex.now()}")
     feeds = RSS.list_fetchable_feeds()
-    for feed <- feeds, do: fetch(feed)
-    Logger.info("Successfully finished RSS fetch run; sleeping!")
+
+    for feed <- feeds, do: Task.start(fn ->
+      fetch(feed)
+      Logger.info("Fetched #{feed.url}!")
+    end)
+
     Process.sleep(delay)
     run(opts)
   end
