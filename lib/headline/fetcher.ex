@@ -24,7 +24,11 @@ defmodule Headline.Fetcher do
 
   def fetch(feed) do
     with {:ok, %{body: body}} <- HTTPoison.get(feed.url) do
-      entries = xpath(body, ~x"//feed/entry"l, title: ~x"./title/text()"s, url: ~x"./id/text()"s, html: ~x"./content/text()"s)
+      atom_entries = xpath(body, ~x"//feed/entry"l, title: ~x"./title/text()"s, url: ~x"./id/text()"s, html: ~x"./content/text()"s)
+      rss_entries = xpath(body, ~x"//item"l, title: ~x"./title/text()"s, url: ~x"./link/text()"s, html: ~x"./description/text()"s)
+
+      entries = atom_entries ++ rss_entries
+
       for entry <- entries, do: RSS.create_item(Map.merge(%{feed_id: feed.id}, entry))
       RSS.update_feed(feed, %{last_updated_on_time: Timex.now()})
     end
