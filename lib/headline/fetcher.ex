@@ -5,11 +5,21 @@ defmodule Headline.Fetcher do
 
   use Task, restart: :permanent
 
-  def start_link(arg) do
-    Task.start_link(__MODULE__, :run, [arg])
+  def start do
+    Task.start(__MODULE__, :run, [])
   end
 
-  def run(%{delay: delay} = opts) do
+  def start_link(arg) do
+    Task.start_link(__MODULE__, :run_loop, [arg])
+  end
+
+  def run_loop(%{delay: delay} = opts) do
+    run()
+    Process.sleep(delay)
+    run_loop(opts)
+  end
+
+  def run do
     Logger.info("Starting an RSS fetch run at #{Timex.now()}")
     feeds = RSS.list_fetchable_feeds()
 
@@ -17,9 +27,6 @@ defmodule Headline.Fetcher do
       fetch(feed)
       Logger.info("Fetched #{feed.url}!")
     end)
-
-    Process.sleep(delay)
-    run(opts)
   end
 
   def fetch(feed) do

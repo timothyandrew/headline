@@ -22,6 +22,7 @@ defmodule HeadlineWeb.Router do
   scope "/api", HeadlineWeb do
     pipe_through :api
     get "/hugo.json", FeedController, :hugo_json
+    post "/fetch", FetchController, :create
   end
 
   scope "/fever", HeadlineWeb do
