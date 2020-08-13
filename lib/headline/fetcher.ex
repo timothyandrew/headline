@@ -29,8 +29,16 @@ defmodule Headline.Fetcher do
 
       entries = atom_entries ++ rss_entries
 
-      for entry <- entries, do: RSS.create_item(Map.merge(%{feed_id: feed.id}, entry))
+      for entry <- entries, include?(entry), do: RSS.create_item(Map.merge(%{feed_id: feed.id}, entry))
       RSS.update_feed(feed, %{last_updated_on_time: Timex.now()})
     end
+  end
+
+  defp include?(%{title: title}) do
+    filters = [
+      !String.contains?(title, "Sponsored Post")
+    ]
+
+    Enum.all?(filters)
   end
 end
