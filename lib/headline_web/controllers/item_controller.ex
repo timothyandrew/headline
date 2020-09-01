@@ -9,7 +9,7 @@ defmodule HeadlineWeb.ItemController do
   def index(conn, params) do
     filters = Map.take(params, ["since_id", "max_id", "with_ids"])
     filters = case Map.fetch(filters, "with_ids") do
-      {:ok, with_ids} -> Map.put(filters, "with_ids", String.split(with_ids, ","))
+      {:ok, with_ids} -> Map.put(filters, "with_ids", with_ids |> String.split(",") |> Enum.filter(fn x -> x && x != "" end))
       :error -> filters
     end
 
