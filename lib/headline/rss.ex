@@ -145,8 +145,8 @@ defmodule Headline.RSS do
   end
 
 
-  def list_unread_items(), do: Repo.all(from i in Item, where: i.is_read == false)
-  def list_saved_items(), do: Repo.all(from i in Item, where: i.is_saved == true)
+  def list_unread_items(), do: Repo.all(from i in Item, where: i.is_read == false, order_by: i.id)
+  def list_saved_items(), do: Repo.all(from i in Item, where: i.is_saved == true, order_by: i.id)
 
   def create_item(attrs \\ %{}) do
     %Item{}

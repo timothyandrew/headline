@@ -2,6 +2,7 @@ defmodule HeadlineWeb.Plugs.FeverApiRouter do
   alias HeadlineWeb.{GroupController,FeedController, ItemController}
 
   use Plug.Builder
+  require Logger
 
   plug :common
   plug :groups
@@ -14,6 +15,8 @@ defmodule HeadlineWeb.Plugs.FeverApiRouter do
 
   def common(conn, opts) do
     fetch_query_params(conn)
+
+    Logger.info("Params: #{inspect conn.params}")
 
     case Map.fetch(conn.params, "api") do
       {:ok, "xml"} ->
