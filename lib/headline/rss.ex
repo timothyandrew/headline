@@ -148,10 +148,12 @@ defmodule Headline.RSS do
   def list_unread_items(), do: Repo.all(from i in Item, where: i.is_read == false, order_by: i.id)
   def list_saved_items(), do: Repo.all(from i in Item, where: i.is_saved == true, order_by: i.id)
 
-  def create_item(attrs \\ %{}) do
-    %Item{}
-    |> Item.changeset(attrs)
-    |> Repo.insert()
+  def create_item(%{feed_id: feed_id, title: title} = attrs) do
+    Repo.transaction(fn ->
+      item = Repo.get_by(Item, %{feed_id: feed_id, title: title})
+      if item, do: Repo.rollback("Item already exists")
+      %Item{} |> Item.changeset(attrs) |> Repo.insert()
+    end)
   end
 
   def update_item_status(%Item{} = item, status) do
