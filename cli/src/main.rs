@@ -6,9 +6,10 @@ use tokio_postgres::{NoTls};
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let port = env::var("PORT").unwrap_or("5432".to_owned());
     let database = env::var("DATABASE").unwrap_or("headline_prod".to_owned());
+    let password = env::var("PASSWORD").unwrap_or_default();
     let connection_string = format!(
-        "host=localhost user=postgres port={} dbname={}",
-        port, database
+        "host=localhost user=postgres port={} dbname={} password={}",
+        port, database, password
     );
 
     let (client, connection) = tokio_postgres::connect(&connection_string, NoTls).await?;
