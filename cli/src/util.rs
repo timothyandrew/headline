@@ -15,6 +15,7 @@ pub async fn get_html_page_title(url: &str) -> Result<String, Box<dyn Error>> {
     let title = regex.captures(&text).unwrap().get(1).unwrap();
     let title = title.as_str().to_owned();
     let title = title.replace("\n", " ");
+    let title = htmlescape::decode_html(&title).unwrap_or(title);
 
     Ok(title)
 }
