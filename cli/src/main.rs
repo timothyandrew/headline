@@ -59,7 +59,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let item = cli::Item {
                 title: match title {
                     Some(title) => title.to_owned(),
-                    None => cli::util::get_html_page_title(&url).await?,
+                    None => url::get_title(&url).await?,
                 },
                 url,
             };

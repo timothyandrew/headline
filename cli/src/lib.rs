@@ -1,5 +1,3 @@
-pub mod util;
-
 use tokio_postgres::{Client, Error};
 
 #[derive(Debug)]

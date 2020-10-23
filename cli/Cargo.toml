@@ -9,7 +9,8 @@ edition = "2018"
 [dependencies]
 tokio-postgres = "0.5.5"
 tokio = { version = "0.2", features = ["full"] }
-clap = "~2.27.0"
+clap = "2.33"
 reqwest = { version = "0.10", features = ["json"] }
 regex = "1"
 htmlescape = "0.3.1"
+url = { git = "https://github.com/timothyandrew/url" }
