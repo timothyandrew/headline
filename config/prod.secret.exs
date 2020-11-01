@@ -16,7 +16,7 @@ config :headline, Headline.Repo,
   database: "headline_prod",
   username: "postgres",
   password: database_password,
-  hostname: "127.0.0.1"
+  hostname: "127.0.0.1",
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
 secret_key_base =
