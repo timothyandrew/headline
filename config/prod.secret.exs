@@ -4,16 +4,19 @@
 # remember to add this file to your .gitignore.
 use Mix.Config
 
-database_url =
-  System.get_env("DATABASE_URL") ||
+database_password =
+  System.get_env("DATABASE_PASSWORD") ||
     raise """
-    environment variable DATABASE_URL is missing.
+    environment variable DATABASE_PASSWORD is missing.
     For example: ecto://USER:PASS@HOST/DATABASE
     """
 
 config :headline, Headline.Repo,
   # ssl: true,
-  url: database_url,
+  database: "headline_prod",
+  username: "postgres",
+  password: database_password,
+  hostname: "127.0.0.1"
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
 secret_key_base =
