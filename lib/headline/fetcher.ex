@@ -30,7 +30,7 @@ defmodule Headline.Fetcher do
   end
 
   def fetch(feed) do
-    with {:ok, %{body: body}} <- HTTPoison.get(feed.url) do
+    with {:ok, %{body: body}} <- HTTPoison.get(feed.url, [], follow_redirect: true) do
       atom_entries = xpath(body, ~x"//feed/entry"l, title: ~x"./title/text()"s, url: ~x"./id/text()"s, html: ~x"./content/text()"s)
       rss_entries = xpath(body, ~x"//item"l, title: ~x"./title/text()"s, url: ~x"./link/text()"s, html: ~x"./description/text()"s)
 
