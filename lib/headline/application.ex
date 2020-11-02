@@ -7,17 +7,11 @@ defmodule Headline.Application do
 
   def start(_type, _args) do
     children = [
-      # Start the Ecto repository
       Headline.Repo,
-      # Start the Telemetry supervisor
       HeadlineWeb.Telemetry,
-      # Start the PubSub system
       {Phoenix.PubSub, name: Headline.PubSub},
-      # Start the Endpoint (http/https)
       HeadlineWeb.Endpoint,
-      # Start a worker by calling: Headline.Worker.start_link(arg)
-      # {Headline.Worker, arg}
-      {Headline.Fetcher, %{delay: 3600000}}
+      {Headline.Fetch.Server, %{delay: 3600000}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
