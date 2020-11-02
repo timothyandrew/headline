@@ -4,7 +4,7 @@ defmodule Headline.Fetch.Server do
   import SweetXml
   alias Headline.RSS
   require Logger
-
+  alias Headline.Fetch.Run
   use GenServer
 
   # Client: API
@@ -24,8 +24,7 @@ defmodule Headline.Fetch.Server do
   @impl true
   def init(state) do
     Process.flag(:trap_exit, true)
-    delay = Map.get(state, :delay, 3600000)
-    {:ok, Map.merge(state, %{success: [], fail: [], delay: delay}), {:continue, :fetch}}
+    {:ok, Map.merge(state, %{delay: Map.get(state, :delay, 3600000)}), {:continue, :fetch}}
   end
 
   @impl true
@@ -37,34 +36,30 @@ defmodule Headline.Fetch.Server do
   @impl true
   def handle_info(:fetch, state = %{delay: delay}) do
     # TODO: Terminate existing jobs
-    tasks = run()
+    run = %Run{run_id: DateTime.utc_now(), tasks: run()}
     Process.send_after(self(), :fetch, delay)
-    {:noreply, Map.put(state, :tasks, tasks)}
+    {:noreply, Map.update(state, :runs, [run], fn runs -> [run | Enum.take(runs, 5)] end)}
   end
 
   @impl true
-  def handle_info({:EXIT, pid, :normal}, state = %{success: success, tasks: tasks}) do
-    title = Map.fetch!(tasks, pid)
-    {:noreply, %{state | success: [{DateTime.utc_now(), title} | success], tasks: Map.delete(tasks, pid)}}
+  def handle_info({:EXIT, pid, :normal}, state = %{runs: [run | runs]}) do
+    title = Map.fetch!(run.tasks, pid)
+    run = %{ run | success: [{DateTime.utc_now(), title} | run.success], tasks: Map.delete(run.tasks, pid) }
+    {:noreply, %{state | runs: [run | runs]}}
   end
-  def handle_info({:EXIT, pid, reason}, state = %{fail: fail, tasks: tasks}) do
+  def handle_info({:EXIT, pid, reason}, state = %{runs: [run | runs]}) do
     # TODO: Restart failed jobs
-    title = Map.fetch!(tasks, pid)
-    {:noreply, %{state | fail: [{DateTime.utc_now(), title, reason} | fail], tasks: Map.delete(tasks, pid)}}
+    title = Map.fetch!(run.tasks, pid)
+    run = %{ run | fail: [{DateTime.utc_now(), title, reason} | run.fail], tasks: Map.delete(run.tasks, pid) }
+    {:noreply, %{state | runs: [run | runs]}}
   end
 
   @impl true
-  def terminate(reason, %{tasks: tasks}) do
-    pids = Map.keys(tasks)
-    Enum.each(pids, fn pid -> Process.exit(pid, "Fetch server shutting down with reason #{reason}") end)
-  end
-  def terminate(_reason, _state) do
-    IO.inspect("Fetch server shutting down")
-  end
+  def terminate(_reason, _state), do: IO.inspect("Fetch server shutting down")
 
   @impl true
   def handle_call(:stats, _from, state) do
-    stats = Map.take(state, [:success, :fail])
+    stats = Map.take(state, [:runs])
     {:reply, stats, state}
   end
 
