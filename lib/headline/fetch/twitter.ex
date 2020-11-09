@@ -19,10 +19,12 @@ defmodule Headline.Fetch.Twitter do
   def fetch(feed) do
     auth = "Bearer #{Application.fetch_env!(:headline, __MODULE__)[:token]}"
 
+    url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=#{feed.url}&exclude_replies=true&include_rts=false"
+
     url = if feed.twitter_fetched_upto_id do
-      "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=#{feed.url}&since_id=#{feed.twitter_fetched_upto_id}"
+      "#{url}&since_id=#{feed.twitter_fetched_upto_id}"
     else
-      "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=#{feed.url}"
+      url
     end
 
     with {:ok, %{body: body}} = HTTPoison.get(url, [Authorization: auth], follow_redirect: true) do
