@@ -31,8 +31,6 @@ defmodule Headline.Fetch.Twitter do
       for tweet <- Enum.reverse(tweets) do
         url = get_in(tweet, [:entities, :urls]) |> List.first |> get_in([:url])
 
-        if url == nil, do: IO.inspect(tweet)
-
         RSS.create_item(%{
           feed_id: feed.id,
           title: tweet.text,
