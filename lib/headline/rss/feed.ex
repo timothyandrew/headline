@@ -9,6 +9,8 @@ defmodule Headline.RSS.Feed do
     field :site_url, :string
     field :title, :string
     field :url, :string
+    field :twitter_fetched_upto_id, :integer
+    field :type, FeedType
     belongs_to :group, Group
     has_many :items, Item
 
@@ -18,7 +20,7 @@ defmodule Headline.RSS.Feed do
   @doc false
   def changeset(feed, attrs) do
     feed
-    |> cast(attrs, [:title, :url, :site_url, :is_spark, :last_updated_on_time, :group_id])
+    |> cast(attrs, [:title, :url, :site_url, :is_spark, :last_updated_on_time, :group_id, :twitter_fetched_upto_id])
     |> validate_required([:title, :url, :site_url, :is_spark, :last_updated_on_time])
   end
 end

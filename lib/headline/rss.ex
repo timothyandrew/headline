@@ -12,12 +12,13 @@ defmodule Headline.RSS do
   def get_feed!(id), do: Repo.get!(Feed, id)
 
   def list_feeds(), do: Repo.all(from f in Feed, where: not(is_nil(f.last_updated_on_time)))
-  def list_fetchable_feeds, do: Repo.all(from f in Feed, where: not(is_nil(f.url)))
+  def list_rss_feeds, do: Repo.all(from f in Feed, where: f.type == ^:rss)
+  def list_twitter_feeds, do: Repo.all(from f in Feed, where: f.type == ^:twitter)
 
   def list_feeds_hugo() do
     Repo.all(from f in Feed,
       left_join: i in assoc(f, :items),
-      where: i.is_read == false and is_nil(f.url),
+      where: i.is_read == false and f.type == ^:local,
       order_by: [desc: i.inserted_at],
       preload: [items: i])
   end

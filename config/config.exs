@@ -26,6 +26,15 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+twitter_bearer_token =
+  System.get_env("TWITTER_BEARER_TOKEN") ||
+    raise """
+    environment variable TWITTER_BEARER_TOKEN is missing.
+    """
+
+config :headline, Headline.Fetch.Twitter,
+  token: twitter_bearer_token
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

@@ -1,9 +1,5 @@
 # TODO: Possibly use a `Task.Supervisor` to restart individual fetch jobs.
-# TODO: Start a new "run" when `tasks` is empty, and group stats by run
 defmodule Headline.Fetch.Server do
-  import SweetXml
-  alias Headline.RSS
-  require Logger
   alias Headline.Fetch.Run
   use GenServer
 
@@ -48,7 +44,6 @@ defmodule Headline.Fetch.Server do
     {:noreply, %{state | runs: [run | runs]}}
   end
   def handle_info({:EXIT, pid, reason}, state = %{runs: [run | runs]}) do
-    # TODO: Restart failed jobs
     title = Map.fetch!(run.tasks, pid)
     run = %{ run | fail: [{DateTime.utc_now(), title, reason} | run.fail], tasks: Map.delete(run.tasks, pid) }
     {:noreply, %{state | runs: [run | runs]}}
@@ -64,37 +59,7 @@ defmodule Headline.Fetch.Server do
   end
 
   # Fetch implementation
-  defp run do
-    Logger.info("Starting an RSS fetch run at #{Timex.now()}")
-    feeds = RSS.list_fetchable_feeds()
-
-    Enum.reduce(feeds, %{}, fn feed, acc ->
-      {:ok, pid} = Task.start_link(fn ->
-        fetch(feed)
-        Logger.info("Fetched #{feed.url}!")
-      end)
-
-      Map.put(acc, pid, feed.title)
-    end)
-  end
-
-  def fetch(feed) do
-    with {:ok, %{body: body}} <- HTTPoison.get(feed.url, [], follow_redirect: true) do
-      atom_entries = xpath(body, ~x"//feed/entry"l, title: ~x"./title/text()"s, url: ~x"./id/text()"s, html: ~x"./content/text()"s)
-      rss_entries = xpath(body, ~x"//item"l, title: ~x"./title/text()"s, url: ~x"./link/text()"s, html: ~x"./description/text()"s)
-
-      entries = atom_entries ++ rss_entries
-
-      for entry <- entries, include?(entry), do: RSS.create_item(Map.merge(%{feed_id: feed.id}, entry))
-      RSS.update_feed(feed, %{last_updated_on_time: Timex.now()})
-    end
-  end
-
-  defp include?(%{title: title}) do
-    filters = [
-      !String.contains?(title, "Sponsored Post")
-    ]
-
-    Enum.all?(filters)
+  def run do
+    Map.merge(Headline.Fetch.Feed.run(), Headline.Fetch.Twitter.run())
   end
 end
