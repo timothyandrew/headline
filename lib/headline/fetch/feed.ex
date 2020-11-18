@@ -25,10 +25,8 @@ defmodule Headline.Fetch.Feed do
       atom_entries = xpath(body, ~x"//feed/entry"l, title: ~x"./title/text()"s, url: ~x"./id/text()"s, html: ~x"./content/text()"s)
       rss_entries = xpath(body, ~x"//item"l, title: ~x"./title/text()"s, url: ~x"./link/text()"s, text: ~x"./description/text()"s, html: ~x"./content:encoded/text()"s)
 
-      IO.inspect(length(rss_entries))
-
       rss_entries = Enum.map(rss_entries, fn entry ->
-        if entry.html do
+        if is_binary(entry.html) and String.trim(entry.html) != "" do
           Map.delete(entry, :text)
         else
           entry |> Map.put(:html, entry.text) |> Map.delete(:text)
